@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en" data-i18n-title="site.title">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Knowing the How</title>
+  <meta name="description" content="Small interactive pages that explain how everyday things actually work.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    .hero { padding: 48px 0 40px; }
+    .topbar { justify-content: flex-end; }
+    .topics {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      padding-bottom: 56px;
+    }
+    .topic {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color .15s, transform .15s;
+    }
+    a.topic:hover { border-color: var(--sun); transform: translateY(-2px); }
+    .topic .icon { flex: none; width: 72px; height: 72px; }
+    .topic p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+    .topic.soon { border-style: dashed; opacity: 0.7; }
+    .topic.soon .icon {
+      display: grid; place-items: center;
+      border: 1px dashed var(--border); border-radius: 50%;
+      color: var(--muted); font-size: 1.6rem;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="topbar">
+      <button class="lang-toggle" type="button">中文</button>
+    </div>
+    <header class="hero">
+      <h1 data-i18n="site.title">Knowing the How</h1>
+      <p class="lede" data-i18n="site.lede">Small, interactive pages that explain how everyday things work. Each one starts with a question and ends with a picture you can play with.</p>
+    </header>
+
+    <div class="topics">
+      <a class="card topic" href="moon-phases/index.html">
+        <div class="icon" id="tonight-moon"></div>
+        <div>
+          <h3 data-i18n="moon.h">Why does the Moon change shape?</h3>
+          <p data-i18n="moon.p">The Sun, Earth and Moon from above, plus the Moon's phase for the 15 days before and after today.</p>
+        </div>
+      </a>
+      <div class="card topic soon">
+        <div class="icon">?</div>
+        <div>
+          <h3 data-i18n="soon.h">More soon</h3>
+          <p data-i18n="soon.p">The next question goes here.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="assets/i18n.js"></script>
+  <script src="assets/moon.js"></script>
+  <script>
+    I18n.add({
+      en: {
+        'site.title': 'Knowing the How',
+        'site.lede': 'Small, interactive pages that explain how everyday things work. Each one starts with a question and ends with a picture you can play with.',
+        'moon.h': 'Why does the Moon change shape?',
+        'moon.p': "The Sun, Earth and Moon from above, plus the Moon's phase for the 15 days before and after today.",
+        'moon.tonight': 'Tonight: {phase}',
+        'soon.h': 'More soon',
+        'soon.p': 'The next question goes here.',
+        'phase.new': 'New Moon', 'phase.waxingCrescent': 'Waxing Crescent', 'phase.firstQuarter': 'First Quarter',
+        'phase.waxingGibbous': 'Waxing Gibbous', 'phase.full': 'Full Moon', 'phase.waningGibbous': 'Waning Gibbous',
+        'phase.lastQuarter': 'Last Quarter', 'phase.waningCrescent': 'Waning Crescent',
+      },
+      zh: {
+        'site.title': '知其所以然',
+        'site.lede': '一些小小的互动页面，解释身边事物背后的原理。每一页都从一个问题开始，最后给你一张可以动手玩的图。',
+        'moon.h': '月亮为什么会有阴晴圆缺？',
+        'moon.p': '从上方看太阳、地球和月亮，以及今天前后各 15 天的月相。',
+        'moon.tonight': '今晚：{phase}',
+        'soon.h': '敬请期待',
+        'soon.p': '下一个问题，就在这里。',
+        'phase.new': '新月', 'phase.waxingCrescent': '蛾眉月', 'phase.firstQuarter': '上弦月',
+        'phase.waxingGibbous': '盈凸月', 'phase.full': '满月', 'phase.waningGibbous': '亏凸月',
+        'phase.lastQuarter': '下弦月', 'phase.waningCrescent': '残月',
+      },
+    });
+
+    const E = MoonKit.elongation(new Date());
+    const drawMoon = () => {
+      const phase = I18n.t('phase.' + MoonKit.phaseKey(E));
+      document.getElementById('tonight-moon').innerHTML =
+        MoonKit.moonSVG(E, { label: I18n.t('moon.tonight', { phase }) });
+    };
+    I18n.onChange(drawMoon);
+    I18n.apply();
+    drawMoon();
+  </script>
+</body>
+</html>

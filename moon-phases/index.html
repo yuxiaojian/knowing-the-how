@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en" data-i18n-title="title">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Moon Phases · Knowing the How</title>
+  <meta name="description" content="Why the Moon changes shape: the Sun, Earth and Moon from above, and the Moon's phase for 15 days either side of today.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="moon.css">
+</head>
+<body>
+  <main class="wrap">
+    <div class="topbar">
+      <a class="back" href="../index.html" data-i18n="back">← Knowing the How</a>
+      <button class="lang-toggle" type="button">中文</button>
+    </div>
+
+    <header class="page">
+      <h1 data-i18n="h1">Why does the Moon change shape?</h1>
+      <p class="lede" data-i18n="lede">The Moon doesn't make its own light, and nothing ever covers part of it. Sunlight always lights exactly half of it. What changes from night to night is how much of that lit half is turned toward us.</p>
+    </header>
+
+    <!-- 1. The geometry -->
+    <section id="geometry">
+      <h2 data-i18n="geo.h2">The view from above</h2>
+      <p class="muted" data-i18n="geo.note">Looking down on Earth's North Pole. Sizes and distances are not to scale; at true scale the Moon would be about 30 Earths away.</p>
+
+      <div class="stage">
+        <div class="card diagram-card">
+          <svg id="orbit" viewBox="0 0 640 560" role="img" aria-labelledby="orbit-title">
+            <title id="orbit-title" data-i18n="svg.title">Top-down diagram of the Sun, Earth and Moon</title>
+            <defs>
+              <radialGradient id="sun-glow">
+                <stop offset="0%" stop-color="#fff4c8"/>
+                <stop offset="45%" stop-color="#f5c451"/>
+                <stop offset="70%" stop-color="#f0a030" stop-opacity="0.55"/>
+                <stop offset="100%" stop-color="#f0a030" stop-opacity="0"/>
+              </radialGradient>
+              <marker id="ray-head" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="#f5c451"/>
+              </marker>
+              <marker id="orbit-head" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                <path d="M0,1 L9,5 L0,9 z" fill="#9ba1b6"/>
+              </marker>
+            </defs>
+
+            <!-- Sun, off to the right -->
+            <circle cx="790" cy="280" r="210" fill="url(#sun-glow)"/>
+            <text x="626" y="40" class="svg-label sun-label" text-anchor="end" data-i18n="svg.sunlight">Sunlight</text>
+            <g class="rays">
+              <line x1="628" y1="80" x2="520" y2="80"/>
+              <line x1="628" y1="160" x2="535" y2="160"/>
+              <line x1="628" y1="240" x2="540" y2="240"/>
+              <line x1="628" y1="320" x2="540" y2="320"/>
+              <line x1="628" y1="400" x2="535" y2="400"/>
+              <line x1="628" y1="480" x2="520" y2="480"/>
+            </g>
+
+            <!-- Moon's orbit -->
+            <circle cx="290" cy="280" r="190" class="orbit-path"/>
+            <path d="M 424.35,145.65 A 190 190 0 0 0 406,129" class="orbit-dir" marker-end="url(#orbit-head)"/>
+            <g class="ticks" id="ticks"></g>
+            <text x="440" y="285" class="svg-label" text-anchor="middle" data-i18n="svg.new">New</text>
+            <text x="290" y="132" class="svg-label" text-anchor="middle" data-i18n="svg.first">First quarter</text>
+            <text x="140" y="285" class="svg-label" text-anchor="middle" data-i18n="svg.full">Full</text>
+            <text x="290" y="438" class="svg-label" text-anchor="middle" data-i18n="svg.last">Last quarter</text>
+
+            <!-- Line of sight -->
+            <line id="sightline" x1="290" y1="280" x2="290" y2="280" class="sightline"/>
+
+            <!-- Earth: the half facing the Sun is day -->
+            <g transform="translate(290 280)">
+              <circle r="32" fill="#16213d"/>
+              <path d="M0,-32 A32,32 0 0 1 0,32 Z" fill="#3f8fdc"/>
+              <path d="M -18,-40 A 44 44 0 0 0 -40,-18" class="spin" marker-end="url(#orbit-head)"/>
+            </g>
+            <text id="earth-label" x="290" y="336" class="svg-label" text-anchor="middle" data-i18n="svg.earth">Earth</text>
+
+            <!-- You, carried around once a day by Earth's spin -->
+            <g id="observer">
+              <line id="horizon" class="horizon"/>
+              <circle id="you-dot" r="5" class="you-dot"/>
+              <text id="you-label" class="svg-label you-label" text-anchor="middle" data-i18n="svg.you">You</text>
+            </g>
+
+            <!-- Moon: lit half always faces the Sun; the blue arc is the half facing Earth -->
+            <g id="moon-g" transform="translate(480 280)">
+              <circle r="17" fill="#2a2f3e"/>
+              <path d="M0,-17 A17,17 0 0 1 0,17 Z" fill="#efeadb"/>
+              <g id="near-arc">
+                <path d="M0,-24 A24,24 0 0 0 0,24" class="near-arc"/>
+              </g>
+            </g>
+          </svg>
+
+          <ul class="legend">
+            <li><span class="sw sw-lit"></span><span data-i18n="legend.lit">Half lit by the Sun</span></li>
+            <li><span class="sw sw-near"></span><span data-i18n="legend.near">Half facing Earth</span></li>
+            <li><span class="sw sw-sight"></span><span data-i18n="legend.sight">Our line of sight</span></li>
+            <li><span class="sw sw-you"></span><span data-i18n="legend.you">You in San Francisco, and your horizon</span></li>
+          </ul>
+        </div>
+
+        <div class="card view-card">
+          <div class="view-title" data-i18n="view.title">Seen from San Francisco</div>
+          <div id="view-moon" class="view-moon"></div>
+          <div id="phase-name" class="phase-name">–</div>
+          <dl class="stats">
+            <div><dt data-i18n="stat.lit">Lit</dt><dd id="phase-pct">–</dd></div>
+            <div><dt data-i18n="stat.age">Days since new moon</dt><dd id="phase-age">–</dd></div>
+          </dl>
+          <div id="phase-date" class="phase-date">–</div>
+        </div>
+      </div>
+
+      <div class="controls card">
+        <button id="play" class="primary" type="button">▶ Play</button>
+        <div class="step-btns">
+          <button id="prev-day" type="button" data-i18n="prevDay" data-i18n-attr="aria-label:prevDay.aria">−1 day</button>
+          <button id="next-day" type="button" data-i18n="nextDay" data-i18n-attr="aria-label:nextDay.aria">+1 day</button>
+        </div>
+        <div class="slider-wrap">
+          <input id="slider" type="range" min="-15" max="15" step="0.01" value="0" data-i18n-attr="aria-label:slider.aria">
+          <div class="slider-scale">
+            <span data-i18n="scale.minus">−15 days</span>
+            <span data-i18n="tonight">Tonight</span>
+            <span data-i18n="scale.plus">+15 days</span>
+          </div>
+        </div>
+        <label class="speed">
+          <span data-i18n="speed">Mode</span>
+          <select id="speed">
+            <option value="step" data-i18n="speed.step" selected>Day by day</option>
+            <option value="0.25" data-i18n="speed.slow">6 hours / sec</option>
+            <option value="1" data-i18n="speed.mid">1 day / sec</option>
+            <option value="3" data-i18n="speed.fast">3 days / sec</option>
+          </select>
+        </label>
+        <button id="today" type="button" data-i18n="tonight">Tonight</button>
+      </div>
+
+      <div class="card sky-card">
+        <div class="sky-head">
+          <div>
+            <h3 data-i18n="sky.h">The Moon in your sky</h3>
+            <p class="muted" data-i18n="sky.note">Facing south from San Francisco. Play one day to watch Earth's spin carry the Moon and the Sun across the sky, while the diagram above spins Earth with it.</p>
+          </div>
+          <button id="sky-play" class="primary" type="button">▶ Play this day</button>
+        </div>
+        <svg id="sky" viewBox="0 0 800 300" role="img" aria-labelledby="sky-title">
+          <title id="sky-title" data-i18n="sky.title">The sky facing south from San Francisco</title>
+          <defs>
+            <linearGradient id="sky-grad" x1="0" y1="0" x2="0" y2="1">
+              <stop id="sky-top" offset="0" stop-color="#060914"/>
+              <stop id="sky-bottom" offset="1" stop-color="#0f1730"/>
+            </linearGradient>
+            <radialGradient id="sky-sun-glow">
+              <stop offset="0%" stop-color="#fff6d0"/>
+              <stop offset="40%" stop-color="#f5c451"/>
+              <stop offset="100%" stop-color="#f5c451" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <rect width="800" height="230" fill="url(#sky-grad)"/>
+          <g id="stars" class="stars"></g>
+          <g id="alt-grid" class="alt-grid"></g>
+          <path id="sun-track" class="sun-track"/>
+          <path id="moon-track" class="moon-track"/>
+          <g id="sky-sun"><circle r="26" fill="url(#sky-sun-glow)"/><circle r="10" fill="#fff1bf"/></g>
+          <g id="sky-moon"></g>
+          <rect y="230" width="800" height="70" class="ground"/>
+          <line x1="0" x2="800" y1="230" y2="230" class="horizon-line"/>
+          <g id="compass" class="compass"></g>
+          <text id="sky-clock" x="788" y="28" class="sky-clock" text-anchor="end">–</text>
+        </svg>
+        <div class="sky-foot">
+          <label class="time-of-day">
+            <span data-i18n="sky.time">Time of day</span>
+            <input id="sky-time" type="range" min="0" max="23.98" step="0.01" value="21" data-i18n-attr="aria-label:sky.time">
+          </label>
+          <div id="sky-status" class="sky-status">–</div>
+          <ul id="sky-times" class="sky-times"></ul>
+          <ul class="legend sky-legend">
+            <li><span class="sw sw-moon-track"></span><span data-i18n="sky.moonPath">The Moon's path today</span></li>
+            <li><span class="sw sw-sun-track"></span><span data-i18n="sky.sunPath">The Sun's path today</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="explain">
+        <div>
+          <h3 data-i18n="ex1.h">1. Half is always lit</h3>
+          <p data-i18n="ex1.p">The Sun lights whichever half of the Moon faces it, just as it does for Earth. Every point in its orbit, the Moon has a day side and a night side.</p>
+        </div>
+        <div>
+          <h3 data-i18n="ex2.h">2. We see the half facing us</h3>
+          <p data-i18n="ex2.p">From Earth we only see the side of the Moon turned toward us (the blue arc). That's a different half from the sunlit one.</p>
+        </div>
+        <div>
+          <h3 data-i18n="ex3.h">3. The overlap is the phase</h3>
+          <p data-i18n="ex3.p">Where the two halves overlap is the part we see lit. Between the Sun and us, the overlap is zero (new moon). Opposite the Sun, it's complete (full moon).</p>
+        </div>
+      </div>
+
+      <div class="card daily">
+        <div class="daily-text">
+          <h3 data-i18n="daily.h">Wait, doesn't the Moon go around us every day?</h3>
+          <p data-i18n="daily.p">It looks that way, because the Moon rises and sets every day. But that's <strong>Earth spinning</strong> once every 24 hours and carrying you past the Moon (watch the "You" dot). The Moon itself creeps only about 12° along its orbit each day, so it takes <strong>29.5 days</strong> to go all the way around. That slow drift is also why the Moon rises about 50 minutes later each day.</p>
+          <p class="muted" data-i18n="daily.tip">Press Play in "Day by day" mode, or use −1 day / +1 day: each step spins Earth once while the Moon moves only a little.</p>
+        </div>
+        <div class="daily-stat">
+          <div class="big">29.5×</div>
+          <div class="muted" data-i18n="daily.bigLabel">Earth spins about 29.5 times for every lap the Moon makes.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. ±15 days -->
+    <section id="calendar">
+      <h2 data-i18n="cal.h2">The 15 days before and after today</h2>
+      <p class="muted" data-i18n="cal.note">Each card shows the Moon at 9 PM San Francisco time. Tap one to see where the Moon is in the diagram above. All times are San Francisco time.</p>
+      <div id="strip" class="strip" role="list"></div>
+      <ul id="events" class="events"></ul>
+    </section>
+
+    <!-- 3. Location -->
+    <section id="location">
+      <h2 data-i18n="loc.h2">Does it look the same everywhere?</h2>
+      <div class="two-col">
+        <div>
+          <p data-i18n="loc.p1"><strong>The phase does.</strong> How much of the Moon is lit depends only on where the Sun, Earth and Moon are, so at any moment everyone on Earth sees the same fraction lit. A 60% Moon in San Francisco is a 60% Moon in Tokyo and in Cape Town.</p>
+          <p data-i18n="loc.p2"><strong>Which way it's turned doesn't.</strong> People in the southern hemisphere stand "upside down" compared to us, so they see the Moon flipped: a waxing Moon is lit on the <em>left</em>. Near the equator the crescent lies on its back like a smile. The angle also shifts a little over the course of a night as the Moon crosses the sky.</p>
+          <p data-i18n="loc.p3"><strong>The date can differ too.</strong> A full moon at 2 AM in London happens at 6 PM the evening before in San Francisco.</p>
+        </div>
+        <div class="card hemi">
+          <div class="view-title" data-i18n="loc.cardTitle">Tonight's Moon from three places</div>
+          <div id="hemi" class="hemi-row"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Eclipses -->
+    <section id="eclipse">
+      <h2 data-i18n="ecl.h2">Why isn't there an eclipse every month?</h2>
+      <div class="two-col">
+        <div>
+          <p data-i18n="ecl.p1">In the top-down view it looks like Earth's shadow should hit the Moon at every full moon (a lunar eclipse), and the Moon should block the Sun at every new moon (a solar eclipse).</p>
+          <p data-i18n="ecl.p2">It doesn't happen because the Moon's orbit is tilted about <strong>5°</strong> from the plane of Earth's orbit. Most months the full moon passes just above or below Earth's shadow. Eclipses only happen when a full or new moon falls near one of the two places where the orbits cross. That lines up about twice a year, in "eclipse seasons".</p>
+        </div>
+        <div class="card">
+          <svg viewBox="0 0 420 200" role="img" aria-labelledby="tilt-title" class="tilt-svg">
+            <title id="tilt-title" data-i18n="ecl.svgTitle">Side view: the Moon's tilted orbit usually misses Earth's shadow</title>
+            <defs>
+              <linearGradient id="shadow-fade" x1="0" x2="1">
+                <stop offset="0%" stop-color="#000" stop-opacity="0.65"/>
+                <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <circle cx="-30" cy="100" r="70" fill="url(#sun-glow)"/>
+            <line x1="20" y1="100" x2="410" y2="100" class="plane"/>
+            <text x="60" y="92" class="svg-label" data-i18n="ecl.plane">Earth's orbit plane</text>
+            <polygon points="210,88 400,96 400,104 210,112" fill="url(#shadow-fade)"/>
+            <line x1="40" y1="140" x2="390" y2="58" class="tilted"/>
+            <text x="50" y="170" class="svg-label" data-i18n="ecl.moonOrbit">Moon's orbit (tilt exaggerated)</text>
+            <circle cx="210" cy="100" r="12" fill="#3f8fdc"/>
+            <circle cx="340" cy="69.7" r="7" fill="#efeadb"/>
+            <text x="340" y="56" class="svg-label" text-anchor="middle" data-i18n="ecl.full">Full moon</text>
+            <text x="300" y="130" class="svg-label" text-anchor="middle" data-i18n="ecl.shadow">Earth's shadow</text>
+          </svg>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span data-i18n="footer">Phases are computed in your browser from a short lunar series (Meeus, <em>Astronomical Algorithms</em>). Times are good to within about an hour.</span>
+      <a href="../index.html" data-i18n="footer.more">More explainers →</a>
+    </div>
+  </footer>
+
+  <script src="../assets/i18n.js"></script>
+  <script src="../assets/moon.js"></script>
+  <script src="strings.js"></script>
+  <script src="moon.js"></script>
+</body>
+</html>
