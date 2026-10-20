@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en" data-i18n-title="title">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>San Francisco's Climate · Knowing the How</title>
+  <meta name="description" content="Why San Francisco has cool, foggy summers: the cold California Current, upwelling, the inversion lid, inland heat and the Golden Gate.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="climate.css">
+</head>
+<body>
+  <main class="wrap">
+    <div class="topbar">
+      <a class="back" href="../index.html" data-i18n="back">← Knowing the How</a>
+      <div class="topbar-right">
+        <button class="unit-toggle" type="button" id="unit-toggle">°F</button>
+        <button class="lang-toggle" type="button">中文</button>
+      </div>
+    </div>
+
+    <header class="page">
+      <h1 data-i18n="h1">Why are San Francisco summers so cold?</h1>
+      <p class="lede" data-i18n="lede"></p>
+      <div class="hero-stats">
+        <div class="card stat"><div class="big" data-temp="20"></div><div class="muted" data-i18n="hero.sf"></div></div>
+        <div class="card stat hot"><div class="big" data-temp="34"></div><div class="muted" data-i18n="hero.sac"></div></div>
+        <div class="card stat"><div class="big" data-i18n="hero.sepBig">Sep</div><div class="muted" data-i18n="hero.sep"></div></div>
+      </div>
+    </header>
+
+    <!-- 1. The recipe -->
+    <section id="recipe">
+      <h2 data-i18n="rec.h2">Five ingredients</h2>
+      <p class="muted" data-i18n="rec.note"></p>
+
+      <div class="card section-card">
+        <div class="map-wrap">
+          <canvas id="heat" width="860" height="750" aria-hidden="true"></canvas>
+          <svg id="map" viewBox="0 0 860 750" role="img" aria-labelledby="map-title">
+            <title id="map-title" data-i18n="map.title">Map of the San Francisco Bay Area seen from above</title>
+            <defs>
+              <filter id="fog-blur" filterUnits="userSpaceOnUse" x="-60" y="-60" width="980" height="870"><feGaussianBlur stdDeviation="9"/></filter>
+              <filter id="ridge-blur" filterUnits="userSpaceOnUse" x="-60" y="-60" width="980" height="870"><feGaussianBlur stdDeviation="5"/></filter>
+              <marker id="arr-cold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8fd3ff"/></marker>
+              <marker id="arr-hot" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff7a52"/></marker>
+            </defs>
+            <g id="water"></g>
+            <g class="hl" data-step="2" id="upwell"></g>
+            <g class="hl" data-step="3" id="ridges"></g>
+            <g id="fog-g" filter="url(#fog-blur)"></g>
+            <g id="particles"></g>
+            <rect id="night" width="860" height="750" fill="#050816" pointer-events="none"/>
+            <g id="water-labels"></g>
+            <g class="hl" data-step="1" id="current"></g>
+            <g class="hl" data-step="4" id="valley"></g>
+            <g class="hl" data-step="5" id="vents"></g>
+            <g id="places"></g>
+            <g id="compass-g"></g>
+            <text id="map-clock" x="846" y="720" class="map-clock" text-anchor="end"></text>
+            <text id="map-season" x="846" y="740" class="map-label" text-anchor="end"></text>
+          </svg>
+        </div>
+        <div class="heat-scale" id="heat-scale"></div>
+
+        <div class="xs-controls">
+          <button id="day-play" class="primary" type="button" data-i18n="play">▶ Play a day</button>
+          <label class="hour">
+            <span data-i18n="hour"></span>
+            <input id="hour" type="range" min="0" max="23.75" step="0.25" value="16">
+          </label>
+          <div class="seg" id="season" role="group">
+            <button type="button" data-season="jul" data-i18n="season.jul"></button>
+            <button type="button" data-season="sep" data-i18n="season.sep"></button>
+            <button type="button" data-season="jan" data-i18n="season.jan"></button>
+          </div>
+        </div>
+        <p id="xs-caption" class="xs-caption"></p>
+      </div>
+
+      <div class="recipe-grid">
+        <div class="card steps-card">
+          <div class="step-btns" id="step-btns" role="tablist">
+            <button type="button" data-step="1">1</button>
+            <button type="button" data-step="2">2</button>
+            <button type="button" data-step="3">3</button>
+            <button type="button" data-step="4">4</button>
+            <button type="button" data-step="5">5</button>
+            <button type="button" data-step="0" data-i18n="steps.all"></button>
+          </div>
+          <h3 id="step-h"></h3>
+          <div id="step-body" class="step-body"></div>
+        </div>
+        <div class="card profile-card">
+          <div class="view-title" data-i18n="prof.title"></div>
+          <svg id="profile" viewBox="0 0 320 300" role="img" aria-labelledby="prof-t">
+            <title id="prof-t" data-i18n="prof.title"></title>
+          </svg>
+          <p class="muted small" data-i18n="prof.note"></p>
+        </div>
+      </div>
+
+      <div class="card vent">
+        <div class="vent-text">
+          <h3 data-i18n="vent.h"></h3>
+          <p data-i18n="vent.p"></p>
+          <ul>
+            <li data-i18n="vent.1"></li>
+            <li data-i18n="vent.2"></li>
+            <li data-i18n="vent.3"></li>
+          </ul>
+        </div>
+        <div>
+          <div class="view-title" data-i18n="vent.chartTitle"></div>
+          <svg id="vent-chart" viewBox="0 0 420 300" role="img" aria-labelledby="vent-t"><title id="vent-t" data-i18n="vent.chartTitle"></title></svg>
+          <div class="chart-legend" id="vent-legend"></div>
+        </div>
+      </div>
+
+      <div class="card callout">
+        <h3 data-i18n="alaska.h"></h3>
+        <p data-i18n="alaska.p"></p>
+      </div>
+    </section>
+
+    <!-- 2. Look-alikes -->
+    <section id="alike">
+      <h2 data-i18n="al.h2"></h2>
+      <p class="muted" data-i18n="al.note"></p>
+
+      <div class="card chart-card">
+        <div class="chips" id="cities" role="group"></div>
+        <label class="align"><input type="checkbox" id="align" checked> <span data-i18n="al.align"></span></label>
+        <svg id="chart" viewBox="0 0 760 340" role="img" aria-labelledby="chart-t">
+          <title id="chart-t" data-i18n="al.chartTitle"></title>
+        </svg>
+        <div class="chart-legend" id="chart-legend"></div>
+        <div class="compare" id="compare"></div>
+      </div>
+
+      <div class="alike-grid" id="alike-cards"></div>
+
+      <div class="card unique">
+        <h3 data-i18n="un.h"></h3>
+        <ol>
+          <li data-i18n="un.1"></li>
+          <li data-i18n="un.2"></li>
+          <li data-i18n="un.3"></li>
+          <li data-i18n="un.4"></li>
+        </ol>
+      </div>
+
+      <div class="card lat-card">
+        <h3 data-i18n="lat.h"></h3>
+        <p class="muted" data-i18n="lat.note"></p>
+        <div id="lat-bars" class="lat-bars"></div>
+      </div>
+    </section>
+
+    <!-- 3. What's special -->
+    <section id="special">
+      <h2 data-i18n="sp.h2"></h2>
+
+      <div class="card micro">
+        <h3 data-i18n="mc.h"></h3>
+        <p class="muted" data-i18n="mc.note"></p>
+        <div id="micro" class="micro-strip"></div>
+        <div class="micro-axis"><span data-i18n="mc.west"></span><span data-i18n="mc.east"></span></div>
+      </div>
+
+      <div class="fact-grid">
+        <div class="card fact"><div class="fact-big" data-i18n="f1.big"></div><h3 data-i18n="f1.h"></h3><p data-i18n="f1.p"></p></div>
+        <div class="card fact"><div class="fact-big" data-i18n="f2.big"></div><h3 data-i18n="f2.h"></h3><p data-i18n="f2.p"></p></div>
+        <div class="card fact"><div class="fact-big" data-i18n="f3.big"></div><h3 data-i18n="f3.h"></h3><p data-i18n="f3.p"></p></div>
+        <div class="card fact"><div class="fact-big" data-i18n="f4.big"></div><h3 data-i18n="f4.h"></h3><p data-i18n="f4.p"></p></div>
+        <div class="card fact"><div class="fact-big" data-i18n="f5.big"></div><h3 data-i18n="f5.h"></h3><p data-i18n="f5.p"></p></div>
+        <div class="card fact"><div class="fact-big" data-i18n="f6.big"></div><h3 data-i18n="f6.h"></h3><p data-i18n="f6.p"></p></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span data-i18n="footer"></span>
+      <a href="../index.html" data-i18n="footer.more">More explainers →</a>
+    </div>
+  </footer>
+
+  <script src="../assets/i18n.js"></script>
+  <script src="strings.js"></script>
+  <script src="climate.js"></script>
+</body>
+</html>

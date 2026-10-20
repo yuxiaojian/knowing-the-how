@@ -5,6 +5,7 @@ Small, interactive pages that explain how everyday things work.
 | Topic | Page |
 | --- | --- |
 | Why does the Moon change shape? | [`moon-phases/`](moon-phases/) |
+| Why are San Francisco summers so cold? | [`sf-climate/`](sf-climate/) |
 
 ## Layout
 
